@@ -88,7 +88,7 @@ export default function Navbar() {
             </AnimatePresence>
           </motion.button>
 
-          <a href="mailto:pratyakshbharadwaj@gmail.com"
+          <a href="#contact"
             className="magnetic nav-hire-desktop"
             style={{ padding: "8px 18px", borderRadius: 10, fontSize: 14, fontWeight: 700, background: "#00dc82", color: "#000", textDecoration: "none" }}
           >
@@ -122,7 +122,8 @@ export default function Navbar() {
                   {link}
                 </a>
               ))}
-              <a href="mailto:pratyakshbharadwaj@gmail.com"
+              <a href="#contact"
+                onClick={() => setMenuOpen(false)}
                 style={{ marginTop: 8, padding: "12px 16px", borderRadius: 10, fontSize: 14, fontWeight: 700, background: "#00dc82", color: "#000", textDecoration: "none", textAlign: "center" }}
               >
                 Hire Me
