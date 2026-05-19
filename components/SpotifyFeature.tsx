@@ -1,7 +1,8 @@
 "use client";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "./ThemeProvider";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, RefreshCw, Music } from "lucide-react";
 
 const ARTIST_ID = "4xwROKTcnt5K1GmLitjPz4";
 
@@ -11,6 +12,86 @@ const SpotifyIcon = ({ size = 20 }: { size?: number }) => (
   </svg>
 );
 
+function SpotifyEmbed({ dark }: { dark: boolean }) {
+  const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  const [key, setKey] = useState(0);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const embedTheme = dark ? "0" : "1";
+
+  // Only load iframe when scrolled into view
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setStatus("loading"); obs.disconnect(); } },
+      { threshold: 0.1 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const retry = () => { setStatus("loading"); setKey(k => k + 1); };
+
+  const cardBg = dark ? "#0f1923" : "#f8fafc";
+  const textMuted = dark ? "#94a3b8" : "#64748b";
+  const textMain = dark ? "#ffffff" : "#0f172a";
+
+  return (
+    <div ref={wrapperRef} style={{ borderRadius: 20, overflow: "hidden", position: "relative", minHeight: 460, background: cardBg }}>
+
+      {/* Skeleton / loading state */}
+      {(status === "idle" || status === "loading") && (
+        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, background: cardBg, borderRadius: 20, border: `1px solid ${dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}` }}>
+          <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
+            <SpotifyIcon size={36} />
+          </motion.div>
+          <span style={{ fontSize: 13, color: textMuted, fontFamily: "monospace" }}>Loading Spotify…</span>
+        </div>
+      )}
+
+      {/* Error state */}
+      {status === "error" && (
+        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, background: cardBg, borderRadius: 20, border: `1px solid ${dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`, padding: 32, textAlign: "center" }}>
+          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(29,185,84,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Music size={24} color="#1db954" />
+          </div>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: textMain, marginBottom: 6 }}>Spotify is taking a moment</div>
+            <div style={{ fontSize: 13, color: textMuted, marginBottom: 20, lineHeight: 1.6 }}>
+              Spotify&apos;s embed servers are temporarily slow.<br />Open directly or retry below.
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center" }}>
+            <button onClick={retry}
+              style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "9px 18px", borderRadius: 10, fontSize: 13, fontWeight: 700, background: dark ? "rgba(255,255,255,0.07)" : "#e2e8f0", color: textMuted, border: "none", cursor: "pointer" }}>
+              <RefreshCw size={13} /> Retry
+            </button>
+            <a href={`https://open.spotify.com/artist/${ARTIST_ID}`} target="_blank" rel="noopener noreferrer"
+              style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "9px 18px", borderRadius: 10, fontSize: 13, fontWeight: 700, background: "#1db954", color: "#000", textDecoration: "none" }}>
+              <SpotifyIcon size={13} /> Open Spotify
+            </a>
+          </div>
+        </div>
+      )}
+
+      {/* Actual iframe — only mounted when in view */}
+      {(status === "loading" || status === "ready") && (
+        <iframe
+          key={key}
+          src={`https://open.spotify.com/embed/artist/${ARTIST_ID}?utm_source=generator&theme=${embedTheme}`}
+          width="100%"
+          height="460"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          style={{ border: "none", display: "block", borderRadius: 20, opacity: status === "ready" ? 1 : 0, transition: "opacity 0.4s" }}
+          title="Pratyaksh Bharadwaj on Spotify"
+          onLoad={() => setStatus("ready")}
+          onError={() => setStatus("error")}
+        />
+      )}
+    </div>
+  );
+}
+
 export default function SpotifyFeature() {
   const { dark } = useTheme();
   const bg = dark ? "#020817" : "#ffffff";
@@ -18,7 +99,6 @@ export default function SpotifyFeature() {
   const cardBorder = dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)";
   const textMain = dark ? "#ffffff" : "#0f172a";
   const textMuted = dark ? "#94a3b8" : "#64748b";
-  const embedTheme = dark ? "0" : "1";
 
   return (
     <section className="spotlight-section" style={{ background: bg, padding: "96px 0", position: "relative" }}>
@@ -37,22 +117,14 @@ export default function SpotifyFeature() {
         </motion.div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))", gap: 32, alignItems: "start" }}>
-          {/* Spotify artist embed — shows top tracks with built-in 30s previews */}
+          {/* Spotify embed with lazy load + error handling */}
           <motion.div
             initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}
             className="tilt-card"
             style={{ borderRadius: 20, overflow: "hidden", boxShadow: dark ? "0 0 60px rgba(29,185,84,0.08)" : "0 20px 60px rgba(0,0,0,0.1)", position: "relative" }}
           >
             <div className="tilt-shine" />
-            <iframe
-              src={`https://open.spotify.com/embed/artist/${ARTIST_ID}?utm_source=generator&theme=${embedTheme}`}
-              width="100%"
-              height="460"
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              loading="lazy"
-              style={{ border: "none", display: "block", borderRadius: 20 }}
-              title="Pratyaksh Bharadwaj on Spotify"
-            />
+            <SpotifyEmbed dark={dark} />
           </motion.div>
 
           {/* Info panel */}
@@ -60,9 +132,7 @@ export default function SpotifyFeature() {
             initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: 0.1 }}
             style={{ display: "flex", flexDirection: "column", gap: 16 }}
           >
-            {/* Artist card */}
-            <div
-              className="tilt-card glow-card"
+            <div className="tilt-card glow-card"
               style={{ padding: "32px 28px 28px", borderRadius: 20, background: cardBg, border: `1px solid ${cardBorder}`, position: "relative", overflow: "hidden" }}
             >
               <div className="tilt-shine" />
@@ -83,7 +153,6 @@ export default function SpotifyFeature() {
                 Original compositions ranging from soulful Hindi ballads to contemporary indie — each track a window into a different emotion. Hit play on the left to preview.
               </p>
 
-              {/* Song list */}
               <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
                 {[
                   { title: "Darmiyaan", plays: "18K plays" },
@@ -115,10 +184,7 @@ export default function SpotifyFeature() {
                 ))}
               </div>
 
-              <a
-                href={`https://open.spotify.com/artist/${ARTIST_ID}`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <a href={`https://open.spotify.com/artist/${ARTIST_ID}`} target="_blank" rel="noopener noreferrer"
                 className="magnetic"
                 style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "11px 22px", borderRadius: 12, fontSize: 14, fontWeight: 700, background: "#1db954", color: "#000", textDecoration: "none" }}
               >
