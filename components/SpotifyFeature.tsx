@@ -12,10 +12,13 @@ const SpotifyIcon = ({ size = 20 }: { size?: number }) => (
   </svg>
 );
 
+const TIMEOUT_MS = 10000;
+
 function SpotifyEmbed({ dark }: { dark: boolean }) {
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [key, setKey] = useState(0);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const embedTheme = dark ? "0" : "1";
 
   // Only load iframe when scrolled into view
@@ -30,7 +33,19 @@ function SpotifyEmbed({ dark }: { dark: boolean }) {
     return () => obs.disconnect();
   }, []);
 
+  // Start timeout whenever we enter "loading" state
+  useEffect(() => {
+    if (status !== "loading") return;
+    timerRef.current = setTimeout(() => setStatus("error"), TIMEOUT_MS);
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, [status, key]);
+
   const retry = () => { setStatus("loading"); setKey(k => k + 1); };
+
+  const onLoad = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setStatus("ready");
+  };
 
   const cardBg = dark ? "#0f1923" : "#f8fafc";
   const textMuted = dark ? "#94a3b8" : "#64748b";
@@ -84,8 +99,8 @@ function SpotifyEmbed({ dark }: { dark: boolean }) {
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
           style={{ border: "none", display: "block", borderRadius: 20, opacity: status === "ready" ? 1 : 0, transition: "opacity 0.4s" }}
           title="Pratyaksh Bharadwaj on Spotify"
-          onLoad={() => setStatus("ready")}
-          onError={() => setStatus("error")}
+          onLoad={onLoad}
+          onError={() => { if (timerRef.current) clearTimeout(timerRef.current); setStatus("error"); }}
         />
       )}
     </div>
