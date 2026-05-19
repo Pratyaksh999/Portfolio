@@ -45,8 +45,8 @@ export default function Experience() {
   const pillBg = dark ? "rgba(255,255,255,0.05)" : "#f1f5f9";
 
   return (
-    <section id="experience" className="spotlight-section" style={{ background: bg, padding: "96px 0", position: "relative" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 40px" }}>
+    <section id="experience" className="spotlight-section section-pad" style={{ background: bg, position: "relative" }}>
+      <div className="section-container">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
             <span style={{ color: "#00dc82", fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>02.</span>
@@ -63,7 +63,7 @@ export default function Experience() {
           <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
             {experiences.map((exp, i) => (
               <motion.div key={exp.company} initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: i * 0.15 }}
-                style={{ paddingLeft: 72, position: "relative" }}>
+                className="exp-item">
                 {/* Timeline dot */}
                 <div style={{ position: "absolute", left: 0, top: 24, width: 44, height: 44, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, background: `${exp.color}12`, border: `1px solid ${exp.color}30` }}>
                   {exp.logo}

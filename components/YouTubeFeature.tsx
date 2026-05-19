@@ -14,8 +14,8 @@ export default function YouTubeFeature() {
   const textMuted = dark ? "#94a3b8" : "#64748b";
 
   return (
-    <section style={{ background: bg, padding: "96px 0" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 40px" }}>
+    <section className="spotlight-section section-pad" style={{ background: bg, position: "relative" }}>
+      <div className="section-container">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
             <span style={{ color: "#ff0000", fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>▶</span>
@@ -39,9 +39,9 @@ export default function YouTubeFeature() {
           {/* Top accent bar */}
           <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, #ff0000, #ff6b6b, transparent)", zIndex: 1 }} />
 
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 0 }}>
+          <div className="yt-card-inner">
             {/* Video embed */}
-            <div style={{ flex: "1 1 560px", minWidth: 0, position: "relative", paddingTop: "min(315px, 56.25%)" }}>
+            <div style={{ flex: "1 1 300px", minWidth: 0, position: "relative", paddingTop: "56.25%" }}>
               <iframe
                 src={`https://www.youtube.com/embed/${VIDEO_ID}?rel=0&modestbranding=1&color=red`}
                 title="Tu Hi Bata — Pratyaksh Bharadwaj"
@@ -52,7 +52,7 @@ export default function YouTubeFeature() {
             </div>
 
             {/* Info panel */}
-            <div style={{ flex: "0 1 320px", padding: "36px 32px", display: "flex", flexDirection: "column", justifyContent: "space-between", borderLeft: `1px solid ${cardBorder}` }}>
+            <div className="yt-info-panel" style={{ "--yt-border": cardBorder, borderLeft: `1px solid ${cardBorder}` } as React.CSSProperties}>
               <div>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 700, background: "rgba(255,0,0,0.1)", color: "#ff4444", border: "1px solid rgba(255,0,0,0.2)", marginBottom: 20 }}>
                   <Play size={10} fill="#ff4444" />

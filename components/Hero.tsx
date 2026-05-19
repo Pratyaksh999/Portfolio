@@ -127,7 +127,7 @@ export default function Hero() {
       </motion.div>
       <div className="animate-float" style={{ position: "absolute", bottom: "20%", right: "15%", width: 320, height: 320, background: "#6366f1", borderRadius: "50%", filter: "blur(140px)", opacity: 0.08, animationDelay: "2s" }} />
 
-      <div style={{ position: "relative", zIndex: 1, width: "100%", maxWidth: 1100, margin: "0 auto", padding: "100px 40px 60px", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 60 }}>
+      <div className="hero-inner" style={{ position: "relative", zIndex: 1 }}>
         {/* Left */}
         <div style={{ flex: "1 1 480px", minWidth: 0 }}>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
@@ -175,7 +175,7 @@ export default function Hero() {
           </motion.div>
 
           {/* Stats */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.55 }} style={{ display: "flex", gap: 48 }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.55 }} className="hero-stats">
             {[{ num: "2+", label: "Years at Salesforce" }, { num: "5+", label: "AI Projects" }, { num: "$27M", label: "Contract Renewed" }].map(({ num, label }, i) => (
               <motion.div key={label} whileHover={{ scale: 1.1 }} style={{ cursor: "default" }}>
                 <div className="gradient-text" style={{ fontSize: 28, fontWeight: 900, lineHeight: 1 }}>{num}</div>

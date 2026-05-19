@@ -2,9 +2,18 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "./ThemeProvider";
-import { ExternalLink, RefreshCw, Music } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
 const ARTIST_ID = "4xwROKTcnt5K1GmLitjPz4";
+
+// Real track IDs scraped from artist page
+const TRACKS = [
+  { id: "7D6pXEvQEO5saq6DgzhWGK", title: "Darmiyaan" },
+  { id: "5QiHHgAvdukxgNPEU4iBLN", title: "Whatever" },
+  { id: "1WII7u8kH42FK8pTNSSDzZ", title: "Nahi Ho Raha" },
+  { id: "4HXG0rv7Vc0cnwgeJ7413E", title: "Whatever 2.0" },
+  { id: "03PwjZ7fvZ6LY8NBwkOjer", title: "Tu Hi Bata" },
+];
 
 const SpotifyIcon = ({ size = 20 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -12,93 +21,79 @@ const SpotifyIcon = ({ size = 20 }: { size?: number }) => (
   </svg>
 );
 
-const TIMEOUT_MS = 10000;
-
-function SpotifyEmbed({ dark }: { dark: boolean }) {
+function TrackEmbed({ id, title, dark, index }: { id: string; title: string; dark: boolean; index: number }) {
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [key, setKey] = useState(0);
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const embedTheme = dark ? "0" : "1";
 
-  // Only load iframe when scrolled into view
   useEffect(() => {
-    const el = wrapperRef.current;
+    const el = ref.current;
     if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setStatus("loading"); obs.disconnect(); } },
-      { threshold: 0.1 }
-    );
+    // Stagger load — each track loads 200ms after the previous
+    const delay = index * 200;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => setStatus("loading"), delay);
+        obs.disconnect();
+      }
+    }, { threshold: 0.1 });
     obs.observe(el);
     return () => obs.disconnect();
-  }, []);
+  }, [index]);
 
-  // Start timeout whenever we enter "loading" state
   useEffect(() => {
     if (status !== "loading") return;
-    timerRef.current = setTimeout(() => setStatus("error"), TIMEOUT_MS);
+    timerRef.current = setTimeout(() => setStatus("error"), 12000);
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, [status, key]);
-
-  const retry = () => { setStatus("loading"); setKey(k => k + 1); };
 
   const onLoad = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
     setStatus("ready");
   };
 
-  const cardBg = dark ? "#0f1923" : "#f8fafc";
   const textMuted = dark ? "#94a3b8" : "#64748b";
-  const textMain = dark ? "#ffffff" : "#0f172a";
+  const cardBg = dark ? "#0f1923" : "#f8fafc";
+  const cardBorder = dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)";
 
   return (
-    <div ref={wrapperRef} style={{ borderRadius: 20, overflow: "hidden", position: "relative", minHeight: 460, background: cardBg }}>
-
-      {/* Skeleton / loading state */}
+    <div ref={ref} style={{ borderRadius: 12, overflow: "hidden", position: "relative", height: 80, background: cardBg, border: `1px solid ${cardBorder}` }}>
+      {/* Skeleton */}
       {(status === "idle" || status === "loading") && (
-        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, background: cardBg, borderRadius: 20, border: `1px solid ${dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}` }}>
-          <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
-            <SpotifyIcon size={36} />
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", gap: 12, padding: "0 16px" }}>
+          <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.5, repeat: Infinity }}>
+            <SpotifyIcon size={16} />
           </motion.div>
-          <span style={{ fontSize: 13, color: textMuted, fontFamily: "monospace" }}>Loading Spotify…</span>
+          <span style={{ fontSize: 12, color: textMuted, fontFamily: "monospace" }}>{title}</span>
         </div>
       )}
-
-      {/* Error state */}
+      {/* Error */}
       {status === "error" && (
-        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, background: cardBg, borderRadius: 20, border: `1px solid ${dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`, padding: 32, textAlign: "center" }}>
-          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(29,185,84,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Music size={24} color="#1db954" />
-          </div>
-          <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: textMain, marginBottom: 6 }}>Spotify is taking a moment</div>
-            <div style={{ fontSize: 13, color: textMuted, marginBottom: 20, lineHeight: 1.6 }}>
-              Spotify&apos;s embed servers are temporarily slow.<br />Open directly or retry below.
-            </div>
-          </div>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center" }}>
-            <button onClick={retry}
-              style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "9px 18px", borderRadius: 10, fontSize: 13, fontWeight: 700, background: dark ? "rgba(255,255,255,0.07)" : "#e2e8f0", color: textMuted, border: "none", cursor: "pointer" }}>
-              <RefreshCw size={13} /> Retry
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 16px" }}>
+          <span style={{ fontSize: 12, color: textMuted }}>{title}</span>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={() => { setKey(k => k + 1); setStatus("loading"); }}
+              style={{ fontSize: 11, padding: "4px 10px", borderRadius: 6, background: dark ? "rgba(255,255,255,0.08)" : "#e2e8f0", border: "none", color: textMuted, cursor: "pointer" }}>
+              Retry
             </button>
-            <a href={`https://open.spotify.com/artist/${ARTIST_ID}`} target="_blank" rel="noopener noreferrer"
-              style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "9px 18px", borderRadius: 10, fontSize: 13, fontWeight: 700, background: "#1db954", color: "#000", textDecoration: "none" }}>
-              <SpotifyIcon size={13} /> Open Spotify
+            <a href={`https://open.spotify.com/track/${id}`} target="_blank" rel="noopener noreferrer"
+              style={{ fontSize: 11, padding: "4px 10px", borderRadius: 6, background: "#1db954", color: "#000", textDecoration: "none", display: "flex", alignItems: "center", gap: 4 }}>
+              <SpotifyIcon size={10} /> Open
             </a>
           </div>
         </div>
       )}
-
-      {/* Actual iframe — only mounted when in view */}
+      {/* Iframe */}
       {(status === "loading" || status === "ready") && (
         <iframe
           key={key}
-          src={`https://open.spotify.com/embed/artist/${ARTIST_ID}?utm_source=generator&theme=${embedTheme}`}
-          width="100%"
-          height="460"
+          src={`https://open.spotify.com/embed/track/${id}?utm_source=generator&theme=${embedTheme}`}
+          width="100%" height="80"
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          style={{ border: "none", display: "block", borderRadius: 20, opacity: status === "ready" ? 1 : 0, transition: "opacity 0.4s" }}
-          title="Pratyaksh Bharadwaj on Spotify"
+          style={{ border: "none", display: "block", opacity: status === "ready" ? 1 : 0, transition: "opacity 0.4s" }}
+          title={title}
           onLoad={onLoad}
           onError={() => { if (timerRef.current) clearTimeout(timerRef.current); setStatus("error"); }}
         />
@@ -116,8 +111,8 @@ export default function SpotifyFeature() {
   const textMuted = dark ? "#94a3b8" : "#64748b";
 
   return (
-    <section className="spotlight-section" style={{ background: bg, padding: "96px 0", position: "relative" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 40px", position: "relative", zIndex: 1 }}>
+    <section className="spotlight-section section-pad" style={{ background: bg, position: "relative" }}>
+      <div className="section-container" style={{ position: "relative", zIndex: 1 }}>
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
             <span style={{ color: "#1db954", fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>♪</span>
@@ -131,20 +126,37 @@ export default function SpotifyFeature() {
           </p>
         </motion.div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))", gap: 32, alignItems: "start" }}>
-          {/* Spotify embed with lazy load + error handling */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}
-            className="tilt-card"
-            style={{ borderRadius: 20, overflow: "hidden", boxShadow: dark ? "0 0 60px rgba(29,185,84,0.08)" : "0 20px 60px rgba(0,0,0,0.1)", position: "relative" }}
+        <div className="grid-spotify">
+          {/* Track embeds */}
+          <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}
+            className="tilt-card glow-card"
+            style={{ borderRadius: 20, padding: 24, background: cardBg, border: `1px solid ${cardBorder}`, position: "relative", overflow: "hidden" }}
           >
             <div className="tilt-shine" />
-            <SpotifyEmbed dark={dark} />
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, #1db954, #1ed760, transparent)" }} />
+
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(29,185,84,0.12)", border: "1px solid rgba(29,185,84,0.25)", display: "flex", alignItems: "center", justifyContent: "center", color: "#1db954", flexShrink: 0 }}>
+                <SpotifyIcon size={18} />
+              </div>
+              <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "1px", color: textMuted }}>
+                Pratyaksh Bharadwaj · Spotify Tracks
+              </div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {TRACKS.map((track, i) => (
+                <motion.div key={track.id}
+                  initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+                >
+                  <TrackEmbed id={track.id} title={track.title} dark={dark} index={i} />
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
 
           {/* Info panel */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: 0.1 }}
+          <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: 0.1 }}
             style={{ display: "flex", flexDirection: "column", gap: 16 }}
           >
             <div className="tilt-card glow-card"
@@ -159,7 +171,7 @@ export default function SpotifyFeature() {
                   <SpotifyIcon size={24} />
                 </div>
                 <div>
-                  <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", color: textMuted, marginBottom: 3 }}>Artist on Spotify</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "1px", color: textMuted, marginBottom: 3 }}>Artist on Spotify</div>
                   <div style={{ fontSize: 18, fontWeight: 800, color: textMain }}>Pratyaksh Bharadwaj</div>
                 </div>
               </div>

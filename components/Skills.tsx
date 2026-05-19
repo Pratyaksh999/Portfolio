@@ -18,8 +18,8 @@ export default function Skills() {
   const textMain = dark ? "#ffffff" : "#0f172a";
 
   return (
-    <section id="skills" className="spotlight-section" style={{ background: bg, padding: "96px 0", position: "relative" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 40px", position: "relative", zIndex: 1 }}>
+    <section id="skills" className="spotlight-section section-pad" style={{ background: bg, position: "relative" }}>
+      <div className="section-container" style={{ position: "relative", zIndex: 1 }}>
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
             <span style={{ color: "#00dc82", fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>04.</span>
@@ -30,7 +30,7 @@ export default function Skills() {
           </h2>
         </motion.div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }}>
+        <div className="grid-skills">
           {skillGroups.map((group, i) => (
             <motion.div key={group.title}
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.08 }}

@@ -82,8 +82,8 @@ export default function Projects() {
   const rest = projects.filter(p => !p.featured);
 
   return (
-    <section id="projects" className="spotlight-section" style={{ background: bg, padding: "96px 0", position: "relative" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 40px", position: "relative", zIndex: 1 }}>
+    <section id="projects" className="spotlight-section section-pad" style={{ background: bg, position: "relative" }}>
+      <div className="section-container" style={{ position: "relative", zIndex: 1 }}>
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
             <span style={{ color: "#00dc82", fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>03.</span>
@@ -95,7 +95,7 @@ export default function Projects() {
         </motion.div>
 
         {/* Featured */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(460px, 1fr))", gap: 24, marginBottom: 24 }}>
+        <div className="grid-projects-featured">
           {featured.map((p, i) => (
             <motion.div key={p.title} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
               className="tilt-card glow-card"
@@ -142,7 +142,7 @@ export default function Projects() {
         </div>
 
         {/* Rest */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }}>
+        <div className="grid-projects-rest">
           {rest.map((p, i) => (
             <motion.div key={p.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.08 }}
               className="tilt-card glow-card"

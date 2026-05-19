@@ -14,8 +14,8 @@ export default function Education() {
   const textMuted = dark ? "#94a3b8" : "#64748b";
 
   return (
-    <section className="spotlight-section" style={{ background: bg, padding: "96px 0", position: "relative" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 40px" }}>
+    <section className="spotlight-section section-pad" style={{ background: bg, position: "relative" }}>
+      <div className="section-container">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
             <span style={{ color: "#00dc82", fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>05.</span>
