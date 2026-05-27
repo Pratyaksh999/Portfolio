@@ -35,7 +35,7 @@ export default function About() {
           {/* Bio */}
           <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
             {[
-              <>I&apos;m a technical problem-solver at <strong style={{ color: textMain }}>Salesforce</strong>, where I build AI-powered systems that move the needle — from reducing case handling time by 30% to directly contributing to a <strong style={{ color: "#00dc82" }}>$27 million contract renewal</strong>.</>,
+              <>I&apos;m a technical problem-solver at <strong style={{ color: textMain }}>Salesforce</strong>, where I build AI-powered systems that move the needle — from reducing case handling time by 30% to directly contributing to a <strong style={{ color: "#00dc82" }}>$17 million contract renewal</strong>.</>,
               <>My work lives at the intersection of <strong style={{ color: "#6366f1" }}>Generative AI</strong>, enterprise software, and data analytics. I&apos;ve deployed local LLM pipelines, built intelligent dashboards, and engineered NLP classifiers — all in production environments.</>,
               <>Outside of Salesforce, I build passion projects — including an AI chatbot for a Himalayan food brand and a gesture-controlled game for disabled children.</>,
             ].map((para, i) => (
