@@ -38,6 +38,7 @@ const projects = [
     description: "Full-stack AI-powered resume optimization platform using FastAPI, PostgreSQL, SQLAlchemy, React, Firebase Authentication, and Railway. Multi-provider LLM architecture with Gemini-Flash-1.5. Features gamified UX, dark-mode animated UI, free-tier rate limiting (5 daily checks), and helps users improve resume scores by up to 30%. Resolved 10+ production-grade deployment challenges.",
     tags: ["FastAPI", "React", "PostgreSQL", "Firebase", "Gemini", "Railway"],
     github: "https://github.com/Pratyaksh999/Resume-Ragebait",
+    live: "https://resume-ragebait.vercel.app",
     featured: true,
     emoji: "🔥",
     color: "#f59e0b",
@@ -113,13 +114,26 @@ export default function Projects() {
                     <span style={{ fontSize: 12, fontWeight: 700, color: p.color }}>{p.subtitle}</span>
                   </div>
                 </div>
-                <a href={p.github} target="_blank" rel="noopener noreferrer"
-                  style={{ width: 36, height: 36, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", background: dark ? "rgba(255,255,255,0.06)" : "#ebebeb", color: textMuted, textDecoration: "none", transition: "all 0.2s" }}
-                  onMouseEnter={e => e.currentTarget.style.background = dark ? "rgba(255,255,255,0.12)" : "#ddd"}
-                  onMouseLeave={e => e.currentTarget.style.background = dark ? "rgba(255,255,255,0.06)" : "#ebebeb"}
-                >
-                  <GithubIcon size={15} />
-                </a>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {p.live && (
+                    <a href={p.live} target="_blank" rel="noopener noreferrer"
+                      style={{ width: 36, height: 36, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", background: dark ? "rgba(255,255,255,0.06)" : "#ebebeb", color: textMuted, textDecoration: "none", transition: "all 0.2s" }}
+                      onMouseEnter={e => e.currentTarget.style.background = dark ? "rgba(255,255,255,0.12)" : "#ddd"}
+                      onMouseLeave={e => e.currentTarget.style.background = dark ? "rgba(255,255,255,0.06)" : "#ebebeb"}
+                      title="View Live Site"
+                    >
+                      <ExternalLink size={15} />
+                    </a>
+                  )}
+                  <a href={p.github} target="_blank" rel="noopener noreferrer"
+                    style={{ width: 36, height: 36, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", background: dark ? "rgba(255,255,255,0.06)" : "#ebebeb", color: textMuted, textDecoration: "none", transition: "all 0.2s" }}
+                    onMouseEnter={e => e.currentTarget.style.background = dark ? "rgba(255,255,255,0.12)" : "#ddd"}
+                    onMouseLeave={e => e.currentTarget.style.background = dark ? "rgba(255,255,255,0.06)" : "#ebebeb"}
+                    title="View on GitHub"
+                  >
+                    <GithubIcon size={15} />
+                  </a>
+                </div>
               </div>
 
               <p style={{ fontSize: 14, lineHeight: 1.7, color: textMuted, marginBottom: 20 }}>{p.description}</p>
