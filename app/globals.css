@@ -86,9 +86,12 @@ body.cursor-click #cursor-dot { transform: translate(-50%, -50%) scale(0.7); }
 }
 .grid-projects-featured {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 24px;
   margin-bottom: 24px;
+}
+.project-wide {
+  grid-column: span 2;
 }
 .grid-projects-rest {
   display: grid;

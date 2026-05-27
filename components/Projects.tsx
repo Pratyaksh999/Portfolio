@@ -98,7 +98,7 @@ export default function Projects() {
         <div className="grid-projects-featured">
           {featured.map((p, i) => (
             <motion.div key={p.title} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="tilt-card glow-card"
+              className={`tilt-card glow-card ${p.title === "Resume Ragebait" ? "project-wide" : ""}`}
               style={{ padding: 32, borderRadius: 22, background: cardBg, border: `1px solid ${cardBorder}`, position: "relative", overflow: "hidden" }}>
               <div className="tilt-shine" />
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${p.color}, transparent)` }} />
