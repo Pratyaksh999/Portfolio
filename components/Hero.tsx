@@ -176,7 +176,7 @@ export default function Hero() {
 
           {/* Stats */}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.55 }} className="hero-stats">
-            {[{ num: "2+", label: "Years at Salesforce" }, { num: "5+", label: "AI Projects" }, { num: "$27M", label: "Contract Renewed" }].map(({ num, label }, i) => (
+            {[{ num: "2+", label: "Years at Salesforce" }, { num: "5+", label: "AI Projects" }, { num: "$17M", label: "Contract Renewed" }].map(({ num, label }, i) => (
               <motion.div key={label} whileHover={{ scale: 1.1 }} style={{ cursor: "default" }}>
                 <div className="gradient-text" style={{ fontSize: 28, fontWeight: 900, lineHeight: 1 }}>{num}</div>
                 <div style={{ fontSize: 12, color: textMuted, marginTop: 4 }}>{label}</div>

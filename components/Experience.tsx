@@ -15,7 +15,7 @@ const experiences = [
       "Deployed an LLM-based conversation intent classifier using Llama 3.1 to analyze Engineer–Manager Slack interactions, reducing case resolution TTR by 35%.",
       "Designed & maintained 4+ Superset dashboards using Trino, Splunk & Huron, tracking KPIs for proactive org monitoring.",
       "Implemented ML-based anomaly detection systems that proactively identified 90%+ of anomalies in org request rate trends.",
-      "Led technical health reviews translating system metrics into actionable insights — improved org health score by 20% in one month, renewing a $27M contract.",
+      "Led technical health reviews translating system metrics into actionable insights — improved org health score by 20% in one month, renewing a $17M contract.",
       "Mentored 5+ new hires, reducing ramp-up time by 30% and improving overall team productivity.",
     ],
     tags: ["GenAI", "Llama 3.1", "NLP", "Superset", "Splunk", "Python", "ML"],
